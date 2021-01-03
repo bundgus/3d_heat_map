@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    </meta>
+    <title>3D Heat Map</title>
+
+    <style>
+        html,
+        body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+
+    <script src="js/babylon.js"></script>
+    <script src="js/babylonjs.loaders.min.js"></script>
+    <script src="js/babylon.gui.min.js"></script>
+    <script src="js/pep.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <!-- <script src="https://gmousse.github.io/dataframe-js/dist/dataframe.min.js" charset="utf-8"></script> -->
+</head>
+
+<body>
+
+    <canvas id="renderCanvas" touch-action="none"></canvas> <!-- touch-action="none" for best results from PEP -->
+
+    <script>
+        let title_text = "Brand Availability Score";
+        let data_array = null;
+        let max_density = null;
+        let min_density = null;
+        let x_categories = [];
+        let y_categories = [];
+        let z_categories = [];
+        let xwidth = null;
+        let ywidth = null;
+        let zwidth = null;
+
+        function getMax(arr, prop) {
+            let max;
+            for (var i = 0; i < arr.length; i++) {
+                if (max == null || parseInt(arr[i][prop]) > parseInt(max[prop]))
+                    max = arr[i];
+            }
+            return max[prop];
+        }
+
+        function getMin(arr, prop) {
+            let min;
+            for (var i = 0; i < arr.length; i++) {
+                if (min == null || parseInt(arr[i][prop]) < parseInt(min[prop]))
+                    min = arr[i];
+            }
+            return min[prop];
+        }
+
+        function distinctValues(arr, prop) {
+            const result = [];
+            const map = new Map();
+            for (const item of arr) {
+                if (!map.has(item[prop])) {
+                    map.set(item[prop], true);    // set any value to Map
+                    result.push(item[prop]);
+                }
+            }
+            return result;
+        }
+
+        function compute_display_value(data_array, prop, min_density, max_density) {
+            for (const item of data_array) {
+                item.display_value = (item[prop] - min_density) / (max_density - min_density);
+                item.orig_value = item[prop];
+            }
+            return data_array;
+        }
+
+        function add_category_index(item, prop_x, prop_y, prop_z) {
+
+            for (const item of data_array) {
+                item.x = x_categories.findIndex(x => x === item[prop_x]);
+                item.y = y_categories.findIndex(x => x === item[prop_y])
+                item.z = z_categories.findIndex(x => x === item[prop_z])
+            }
+            return data_array;
+        }
+
+        const canvas = document.getElementById("renderCanvas"); // Get the canvas element
+        const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+
+        // Add your code here matching the playground format
+        const createScene = () => {
+
+            camera_distance = Math.cbrt(xwidth * xwidth + ywidth * ywidth + zwidth * zwidth) * 5;
+
+            const default_alpha = 0.9;
+
+            color_map = [
+                [0.929, 0.071, 0.0],
+                [0.859, 0.071, 0.0],
+                [0.784, 0.11, 0.0],
+                [0.714, 0.145, 0.0],
+                [0.643, 0.18, 0.0],
+                [0.573, 0.216, 0.0],
+                [0.502, 0.251, 0.0],
+                [0.427, 0.286, 0.0],
+                [0.357, 0.322, 0.0],
+                [0.286, 0.357, 0.0],
+                [0.216, 0.392, 0.0],
+                [0.141, 0.431, 0.0],
+                [0.071, 0.400, 0.0],
+                [0.0, 0.302, 0.0]
+            ]
+
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color3(0.05, 0.05, 0.05);
+            // scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
+            // scene.fogDensity = 0.01;
+
+            /**** Set camera and light *****/
+            const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 4 * 3, Math.PI / 3, camera_distance, BABYLON.Vector3.Zero());
+            camera.attachControl(canvas, true);
+            const light1 = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(-xwidth * 5, -ywidth * 5, -zwidth * 5));
+            const light2 = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(xwidth * 5, ywidth * 5, zwidth * 5));
+
+            const spec_color = new BABYLON.Color3(0.25, 0.25, 0.25);
+            light1.specular = spec_color;
+            light2.specular = spec_color;
+
+            BABYLON.MeshBuilder
+            const ground = BABYLON.MeshBuilder.CreateGround("ground", {
+                height: camera_distance * 10,
+                width: camera_distance * 10
+            });
+            ground.position.y = -camera_distance;
+            ground.isPickable = false;
+
+            var groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+            groundMaterial.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.05);
+            groundMaterial.emissiveColor = new BABYLON.Color3(0.05, 0.05, 0.05);
+            groundMaterial.specularColor = new BABYLON.Color3(0.05, 0.05, 0.05);
+            groundMaterial.specularPower = 64;
+            ground.material = groundMaterial;
+
+            const SPS = new BABYLON.SolidParticleSystem("SPS", scene, { enableDepthSort: true, isPickable: true });
+
+            const box_size = 1.0;
+            const box = BABYLON.MeshBuilder.CreateBox("box", { width: box_size, height: box_size, depth: box_size });
+
+            data_array
+            SPS.addShape(box, data_array.length);
+            // SPS.addShape(box, (xwidth * ywidth * zwidth));
+
+            box.isVisable = false;
+            box.isPickable = false;
+            box.dispose();
+
+            const mesh = SPS.buildMesh();
+
+            var mat = new BABYLON.StandardMaterial("box mat", scene);
+            mat.diffuseTexture = new BABYLON.Texture("images/box_outline.png");
+            mat.hasAlpha = true;
+            mat.alpha = default_alpha;
+            mat.specularPower = 0.5;
+
+            mesh.material = mat;
+
+            SPS.initParticles = () => {
+                // Set location of all boxes
+                for (var i = 0; i < data_array.length; i++) {
+                    item = data_array[i];
+                    p = i;
+                    SPS.particles[p].position.x = (xwidth - 1 - item.x) - xwidth / 2 + 0.5;
+                    SPS.particles[p].position.y = (ywidth - 1 - item.y) - ywidth / 2 + 0.5;
+                    SPS.particles[p].position.z = (zwidth - 1 - item.z) - zwidth / 2 + 0.5;
+                    color_index = Math.round(item.display_value * 12.5);
+                    SPS.particles[p].display_value = item.display_value;
+                    SPS.particles[p].orig_value = item.orig_value;
+                    SPS.particles[p].display_x = x_categories[item.x];
+                    SPS.particles[p].display_y = y_categories[item.y];
+                    SPS.particles[p].display_z = z_categories[item.z];
+                    SPS.particles[p].color = new BABYLON.Color3(
+                        color_map[color_index][0],
+                        color_map[color_index][1],
+                        color_map[color_index][2]);
+                    let scale_value = item.display_value * 0.8 + 0.2;
+                    SPS.particles[p].scale = new BABYLON.Vector3(scale_value, scale_value, scale_value);
+                }
+            }
+
+            //Update SPS mesh
+            SPS.initParticles();
+            SPS.setParticles();
+            SPS.refreshVisibleSize(); // updates the BBox for pickability
+
+            // Optimizers after first setParticles() call
+            // This will be used only for the next setParticles() calls
+            SPS.computeParticleTexture = false;
+
+            function createLabelPlane(text) {
+                //Set font
+                let font_size = 48;
+                let font = font_size + "px Roboto";
+
+                //Set height for plane
+                let planeHeight = 1;
+
+                //Set height for dynamic texture
+                let DTHeight = 1.5 * font_size;
+
+                //Calculate ratio
+                let ratio = planeHeight / DTHeight;
+
+                //Use a temporay dynamic texture to calculate the length of the text on the dynamic texture canvas
+                let temp = new BABYLON.DynamicTexture("DynamicTexture", 64, scene);
+                let tmpctx = temp.getContext();
+                tmpctx.font = font;
+                let DTWidth = tmpctx.measureText(text).width + 8;
+
+                //Calculate width the plane has to be 
+                let planeWidth = DTWidth * ratio;
+
+                //Create dynamic texture and write the text
+                let dynamicTexture = new BABYLON.DynamicTexture(
+                    "DynamicTexture",
+                    {
+                        width: DTWidth,
+                        height: DTHeight
+                    },
+                    scene,
+                    false
+                );
+
+                dynamicTexture.hasAlpha = true;
+
+                let mat = new BABYLON.StandardMaterial("mat", scene);
+                mat.diffuseTexture = dynamicTexture;
+                dynamicTexture.drawText(text, null, null, font, "white", "transparent");
+
+                //Create plane and set dynamic texture as material
+                let plane = BABYLON.MeshBuilder.CreatePlane(
+                    "xlabelplane",
+                    {
+                        width: planeWidth,
+                        height: planeHeight,
+                        sideOrientation: BABYLON.Mesh.DOUBLESIDE
+                    },
+                    scene);
+
+                return [plane, planeWidth, mat];
+            }
+
+            function addXAxisLabel(text, index, xsize, ysize, zsize) {
+
+                let label_plane = createLabelPlane(text);
+                let plane = label_plane[0];
+                let planeWidth = label_plane[1];
+                let mat = label_plane[2];
+
+                let pivot = new BABYLON.TransformNode("xroot");
+                pivot.position = new BABYLON.Vector3(
+                    0,
+                    -(ysize / 2),
+                    -(zsize / 2)
+                );
+                plane.parent = pivot;
+                pivot.rotate(BABYLON.Axis.Z, - Math.PI / 2, BABYLON.Space.WORLD);
+                pivot.rotate(BABYLON.Axis.X, Math.PI / 4, BABYLON.Space.WORLD);
+                plane.position.x = (planeWidth / 2) + 2;
+                plane.position.y = (xsize / 2) - 0.5 - index;
+                plane.material = mat;
+
+                // line creation
+                let path = [
+                    new BABYLON.Vector3(1, 0, 0),
+                    new BABYLON.Vector3(.3, 0, 0),
+                    new BABYLON.Vector3(0, 0.4, 0),
+                    new BABYLON.Vector3(.3, 0, 0),
+                    new BABYLON.Vector3(0, -0.4, 0)
+                ]
+                let line = BABYLON.Mesh.CreateLines("lines", path, scene, true);
+                line.parent = pivot;
+                line.position.y = (xsize / 2) - 0.5 - index;
+            }
+
+            function addYAxisLabel(text, index, xsize, ysize, zsize) {
+                let label_plane = createLabelPlane(text);
+                let plane = label_plane[0];
+                let planeWidth = label_plane[1];
+                let mat = label_plane[2];
+
+                var pivot = new BABYLON.TransformNode("yroot");
+                pivot.position = new BABYLON.Vector3(
+                    (xsize / 2),
+                    0,
+                    -(zsize / 2)
+                );
+                plane.parent = pivot;
+                pivot.rotate(BABYLON.Axis.Y, Math.PI / 4, BABYLON.Space.WORLD);
+                plane.position.x = (planeWidth / 2) + 2;
+                plane.position.y = (ysize / 2) - 0.5 - index;
+                plane.material = mat;
+
+                // line creation
+                let path = [
+                    new BABYLON.Vector3(1, 0, 0),
+                    new BABYLON.Vector3(.3, 0, 0),
+                    new BABYLON.Vector3(0, 0.4, 0),
+                    new BABYLON.Vector3(.3, 0, 0),
+                    new BABYLON.Vector3(0, -0.4, 0)
+                ]
+                let line = BABYLON.Mesh.CreateLines("lines", path, scene, true);
+                line.parent = pivot;
+                line.position.y = (ysize / 2) - 0.5 - index;
+            }
+
+            function addZAxisLabel(text, index, xsize, ysize, zsize) {
+                let label_plane = createLabelPlane(text);
+                let plane = label_plane[0];
+                let planeWidth = label_plane[1];
+                let mat = label_plane[2];
+
+                let pivot = new BABYLON.TransformNode("zroot");
+                pivot.position = new BABYLON.Vector3(
+                    (xsize / 2),
+                    (ysize / 2),
+                    0
+                );
+                plane.parent = pivot;
+                pivot.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
+                pivot.rotate(BABYLON.Axis.Z, Math.PI / 4, BABYLON.Space.WORLD);
+                plane.position.x = (planeWidth / 2) + 2;
+                plane.position.y = (zsize / 2) - 0.5 - index;
+                plane.position.z = 0;
+                plane.material = mat;
+
+                // line creation
+                let path = [
+                    new BABYLON.Vector3(1, 0, 0),
+                    new BABYLON.Vector3(.3, 0, 0),
+                    new BABYLON.Vector3(0, 0.4, 0),
+                    new BABYLON.Vector3(.3, 0, 0),
+                    new BABYLON.Vector3(0, -0.4, 0)
+                ]
+                let line = BABYLON.Mesh.CreateLines("lines", path, scene, true);
+                line.parent = pivot;
+                line.position.y = (zsize / 2) - 0.5 - index;
+            }
+
+            x_categories.forEach(label_x);
+
+            function label_x(value, index, array) {
+                addXAxisLabel(value, index, xwidth, ywidth, zwidth);
+            }
+
+            y_categories.forEach(label_y);
+
+            function label_y(value, index, array) {
+                addYAxisLabel(value, index, xwidth, ywidth, zwidth);
+            }
+
+            z_categories.forEach(label_z);
+
+            function label_z(value, index, array) {
+                addZAxisLabel(value, index, xwidth, ywidth, zwidth);
+            }
+
+            // add x axis slider
+
+            // line creation
+            let x_filter_path = [
+                new BABYLON.Vector3((xwidth) / 2, -(ywidth) / 2 - 1, -(zwidth) / 2 - 1),
+                new BABYLON.Vector3(-(xwidth) / 2, -(ywidth) / 2 - 1, -(zwidth) / 2 - 1)
+            ]
+            let x_filter_line = BABYLON.Mesh.CreateLines("x_filter_line", x_filter_path, scene, true);
+
+            var x_min_sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.5, scene);
+            x_min_sphere.position.x = (xwidth) / 2;
+            x_min_sphere.position.y = -(ywidth) / 2 - 1;
+            x_min_sphere.position.z = -(zwidth) / 2 - 1;
+
+            var x_max_sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.5, scene);
+            x_max_sphere.position.x = -(xwidth) / 2;
+            x_max_sphere.position.y = -(ywidth) / 2 - 1;
+            x_max_sphere.position.z = -(zwidth) / 2 - 1;
+
+            var xDragBehavior_min = new BABYLON.PointerDragBehavior({ dragAxis: new BABYLON.Vector3(1, 0, 0) });
+
+            xDragBehavior_min.onDragObservable.add((event) => {
+                update_box_visibility();
+            })
+
+            xDragBehavior_min.validateDrag = (targetPosition) => {
+                if (targetPosition.x > ((xwidth) / 2)) {
+                    x_min_sphere.position.x = (xwidth) / 2;
+                    return false;
+
+                }
+                if (targetPosition.x < x_max_sphere.position.x + 1.0) {
+                    x_min_sphere.position.x = x_max_sphere.position.x + 1.0;
+                    return false;
+                }
+                return true;
+            }
+
+            x_min_sphere.addBehavior(xDragBehavior_min);
+
+            // max x sphere behavior
+            var xDragBehavior_max = new BABYLON.PointerDragBehavior({ dragAxis: new BABYLON.Vector3(1, 0, 0) });
+
+            xDragBehavior_max.onDragObservable.add((event) => {
+                update_box_visibility();
+            })
+
+            xDragBehavior_max.validateDrag = (targetPosition) => {
+                if (targetPosition.x < -(xwidth) / 2) {
+                    x_max_sphere.position.x = -(xwidth) / 2;
+                    return false;
+
+                }
+                if (targetPosition.x > x_min_sphere.position.x - 1.0) {
+                    x_max_sphere.position.x = x_min_sphere.position.x - 1.0;
+                    return false;
+                }
+                return true;
+            }
+
+            x_max_sphere.addBehavior(xDragBehavior_max);
+
+            // add y axis slider
+
+            // line creation
+            let y_filter_path = [
+                new BABYLON.Vector3((xwidth) / 2 + 1, (ywidth) / 2, -(zwidth) / 2 - 1),
+                new BABYLON.Vector3((xwidth) / 2 + 1, -(ywidth) / 2, -(zwidth) / 2 - 1)
+            ]
+            let y_filter_line = BABYLON.Mesh.CreateLines("y_filter_line", y_filter_path, scene, true);
+
+            var y_min_sphere = BABYLON.Mesh.CreateSphere("y_min_sphere", 16, 0.5, scene);
+            y_min_sphere.position.x = (xwidth) / 2 + 1;
+            y_min_sphere.position.y = (ywidth) / 2;
+            y_min_sphere.position.z = -(zwidth) / 2 - 1;
+
+            var y_max_sphere = BABYLON.Mesh.CreateSphere("y_max_sphere", 16, 0.5, scene);
+            y_max_sphere.position.x = (xwidth) / 2 + 1;
+            y_max_sphere.position.y = -(ywidth) / 2;
+            y_max_sphere.position.z = -(zwidth) / 2 - 1;
+
+            // min y sphere behavior
+            var yDragBehavior_min = new BABYLON.PointerDragBehavior({ dragAxis: new BABYLON.Vector3(0, 1, 0) });
+
+            yDragBehavior_min.onDragObservable.add((event) => {
+                update_box_visibility();
+            })
+
+            yDragBehavior_min.validateDrag = (targetPosition) => {
+                if (targetPosition.y > ((ywidth) / 2)) {
+                    y_min_sphere.position.y = (ywidth) / 2;
+                    return false;
+
+                }
+                if (targetPosition.y < y_max_sphere.position.y + 1.0) {
+                    y_min_sphere.position.y = y_max_sphere.position.y + 1.0;
+                    return false;
+                }
+                return true;
+            }
+
+            y_min_sphere.addBehavior(yDragBehavior_min);
+
+            // max y sphere behavior
+            var yDragBehavior_max = new BABYLON.PointerDragBehavior({ dragAxis: new BABYLON.Vector3(0, 1, 0) });
+
+            yDragBehavior_max.onDragObservable.add((event) => {
+                update_box_visibility();
+            })
+
+            yDragBehavior_max.validateDrag = (targetPosition) => {
+                if (targetPosition.y < -(ywidth) / 2) {
+                    y_max_sphere.position.y = -(ywidth) / 2;
+                    return false;
+
+                }
+                if (targetPosition.y > y_min_sphere.position.y - 1.0) {
+                    y_max_sphere.position.y = y_min_sphere.position.y - 1.0;
+                    return false;
+                }
+                return true;
+            }
+
+            y_max_sphere.addBehavior(yDragBehavior_max);
+
+            // add z axis slider
+
+            // line creation
+            let z_filter_path = [
+                new BABYLON.Vector3((xwidth) / 2 + 1, (ywidth) / 2 + 1, (zwidth) / 2),
+                new BABYLON.Vector3((xwidth) / 2 + 1, (ywidth) / 2 + 1, -(zwidth) / 2)
+            ]
+            let z_filter_line = BABYLON.Mesh.CreateLines("z_filter_line", z_filter_path, scene, true);
+
+            var z_min_sphere = BABYLON.Mesh.CreateSphere("z_min_sphere", 16, 0.5, scene);
+            z_min_sphere.position.x = (xwidth) / 2 + 1;
+            z_min_sphere.position.y = (ywidth) / 2 + 1;
+            z_min_sphere.position.z = (zwidth) / 2;
+
+            var z_max_sphere = BABYLON.Mesh.CreateSphere("z_max_sphere", 16, 0.5, scene);
+            z_max_sphere.position.x = (xwidth) / 2 + 1;
+            z_max_sphere.position.y = (ywidth) / 2 + 1;
+            z_max_sphere.position.z = -(zwidth) / 2;
+
+            // min z sphere behavior
+            var zDragBehavior_min = new BABYLON.PointerDragBehavior({ dragAxis: new BABYLON.Vector3(0, 0, 1) });
+
+            zDragBehavior_min.onDragObservable.add((event) => {
+                update_box_visibility();
+            })
+
+            zDragBehavior_min.validateDrag = (targetPosition) => {
+                if (targetPosition.z > ((zwidth) / 2)) {
+                    z_min_sphere.position.z = (zwidth) / 2;
+                    return false;
+
+                }
+                if (targetPosition.z < z_max_sphere.position.z + 1.0) {
+                    z_min_sphere.position.z = z_max_sphere.position.z + 1.0;
+                    return false;
+                }
+                return true;
+            }
+
+            z_min_sphere.addBehavior(zDragBehavior_min);
+
+            // max z sphere behavior
+            var zDragBehavior_max = new BABYLON.PointerDragBehavior({ dragAxis: new BABYLON.Vector3(0, 0, 1) });
+
+            zDragBehavior_max.onDragObservable.add((event) => {
+                update_box_visibility();
+            })
+
+            zDragBehavior_max.validateDrag = (targetPosition) => {
+                if (targetPosition.z < -(zwidth) / 2) {
+                    z_max_sphere.position.z = -(zwidth) / 2;
+                    return false;
+
+                }
+                if (targetPosition.z > z_min_sphere.position.z - 1.0) {
+                    z_max_sphere.position.z = z_min_sphere.position.z - 1.0;
+                    return false;
+                }
+                return true;
+            }
+
+            z_max_sphere.addBehavior(zDragBehavior_max);
+
+            // UI
+            function update_mat_alpha(value) {
+                mat.alpha = value;
+            }
+
+            function update_box_visibility(value) {
+
+                for (var i = 0; i < data_array.length; i++) {
+                    part = SPS.particles[i];
+                    const x = part.position.x;
+                    const y = part.position.y;
+                    const z = part.position.z;
+                    if (
+                        (x > x_min_sphere.position.x)
+                        ||
+                        (x < x_max_sphere.position.x)
+                        ||
+                        (y > y_min_sphere.position.y)
+                        ||
+                        (y < y_max_sphere.position.y)
+                        ||
+                        (z > z_min_sphere.position.z)
+                        ||
+                        (z < z_max_sphere.position.z)
+                        ||
+                        (part.display_value > maxval_slider.value)
+                        ||
+                        (part.display_value < minval_slider.value)
+                    ) {
+                        part.isVisible = false;
+                    }
+                    else {
+                        part.isVisible = true;
+                    }
+                }
+            }
+
+            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
+            advancedTexture.isForeground = true;
+            advancedTexture.idealWidth = 600;
+
+            var title = new BABYLON.GUI.TextBlock();
+            title.text = title_text;
+            title.color = "white";
+            title.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            title.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+            title.fontSize = 20;
+            advancedTexture.addControl(title);
+
+            var grid = new BABYLON.GUI.Grid();
+            grid.background = "transparent";
+            grid.width = "170px";
+            grid.height = "90px";
+            grid.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            grid.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+            grid.addColumnDefinition(85, true);
+            grid.addColumnDefinition(85, true);
+            grid.addRowDefinition(15, true);
+            grid.addRowDefinition(15, true);
+            grid.addRowDefinition(15, true);
+            advancedTexture.addControl(grid);
+
+            var alpha_slider = new BABYLON.GUI.Slider();
+            alpha_slider.minimum = 0.05;
+            alpha_slider.maximum = 1.0;
+            alpha_slider.value = default_alpha;
+            alpha_slider.height = "10px";
+            alpha_slider.width = "75px";
+            alpha_slider.color = "#003399";
+            alpha_slider.background = "grey";
+            alpha_slider.onValueChangedObservable.add(update_mat_alpha);
+            grid.addControl(alpha_slider, 0, 0)
+
+
+            function update_maxval_slider(value) {
+
+                if (minval_slider.value > maxval_slider.value) {
+                    minval_slider.value = maxval_slider.value;
+                }
+
+                update_box_visibility(value);
+            }
+
+            var maxval_slider = new BABYLON.GUI.Slider();
+            maxval_slider.minimum = 0.0;
+            maxval_slider.maximum = 1.0;
+            maxval_slider.value = 1.0;
+            maxval_slider.height = "10px";
+            maxval_slider.width = "75px";
+            maxval_slider.color = "#003399";
+            maxval_slider.background = "grey";
+            maxval_slider.onValueChangedObservable.add(update_maxval_slider);
+            grid.addControl(maxval_slider, 2, 0)
+
+            function update_minval_slider(value) {
+
+                if (minval_slider.value > maxval_slider.value) {
+                    maxval_slider.value = minval_slider.value;
+                }
+
+                update_box_visibility(value);
+            }
+
+            var minval_slider = new BABYLON.GUI.Slider();
+            minval_slider.minimum = 0.0;
+            minval_slider.maximum = 1.0;
+            minval_slider.value = 0.0;
+            minval_slider.height = "10px";
+            minval_slider.width = "75px";
+            minval_slider.color = "#003399";
+            minval_slider.background = "grey";
+            minval_slider.onValueChangedObservable.add(update_minval_slider);
+            grid.addControl(minval_slider, 1, 0)
+
+            var timeline_slider = new BABYLON.GUI.Slider();
+            timeline_slider.minimum = 0.00;
+            timeline_slider.maximum = 1.0;
+            timeline_slider.value = 0.0;
+            timeline_slider.height = "10px";
+            timeline_slider.width = "500px";
+            timeline_slider.color = "#003399";
+            timeline_slider.background = "grey";
+            timeline_slider.left = "20px";
+            timeline_slider.top = "-20px";
+            timeline_slider.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+            timeline_slider.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+            // timeline_slider.onValueChangedObservable.add(update_box_visibility);
+            // advancedTexture.addControl(timeline_slider);
+
+            var transparency_slider_text = new BABYLON.GUI.TextBlock();
+            transparency_slider_text.text = "Transparency";
+            transparency_slider_text.color = "white";
+            transparency_slider_text.fontSize = 10;
+            transparency_slider_text.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            grid.addControl(transparency_slider_text, 0, 1);
+
+            var maxval_slider_text = new BABYLON.GUI.TextBlock();
+            maxval_slider_text.text = "Max Value";
+            maxval_slider_text.color = "white";
+            maxval_slider_text.fontSize = 10;
+            maxval_slider_text.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            grid.addControl(maxval_slider_text, 2, 1);
+
+            var minval_slider_text = new BABYLON.GUI.TextBlock();
+            minval_slider_text.text = "Min Value";
+            minval_slider_text.color = "white";
+            minval_slider_text.fontSize = 10;
+            minval_slider_text.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            grid.addControl(minval_slider_text, 1, 1);
+
+            // Limit camera
+            camera.lowerRadiusLimit = 1;
+            camera.upperRadiusLimit = camera_distance * 2;
+
+            framerate = 30;
+            // Animate 
+            var animationTimelineSlider = new BABYLON.Animation(
+                "timeline_slider_animation",
+                "value",
+                framerate,
+                BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+                BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+            var keys = [];
+
+            keys.push({
+                frame: 0,
+                value: 0
+            });
+
+            keys.push({
+                frame: framerate * 5,
+                value: 1
+            });
+
+            animationTimelineSlider.setKeys(keys);
+            timeline_slider.animations = [];
+            timeline_slider.animations.push(animationTimelineSlider);
+
+            var button = BABYLON.GUI.Button.CreateSimpleButton("button", "Play");
+            button.top = "-18px";
+            button.left = "15px";
+            button.width = "40px";
+            button.height = "15px";
+            button.cornerRadius = 20;
+            button.thickness = 1;
+            button.children[0].color = "white";
+            button.children[0].fontSize = 10;
+            button.color = "white";
+            button.background = "green";
+            button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+
+            // advancedTexture.addControl(button);
+
+            var playing = null;
+            var animatable = null;
+            button.onPointerClickObservable.add(function () {
+                if (playing != true || playing === null) {
+                    button.background = "yellow";
+                    button.children[0].color = "black";
+                    button.children[0].text = "Pause";
+                    playing = true;
+                    if (animatable === null) {
+                        animatable = scene.beginDirectAnimation(timeline_slider, [animationTimelineSlider], 0, framerate * 5, true);
+                    }
+                    else {
+                        animatable.restart();
+                    }
+
+                } else {
+                    button.background = "green";
+                    button.children[0].text = "Start";
+                    button.children[0].color = "white";
+                    playing = false;
+                    animatable.pause();
+                }
+
+            });
+
+            scene.registerBeforeRender(function () {
+                SPS.setParticles();
+            });
+
+            var picked_mesh = null;
+
+            // create new highlight box
+            highlight_box = BABYLON.MeshBuilder.CreateBox("highlite_box", {
+                width: box_size,
+                height: box_size,
+                depth: box_size
+            });
+            highlight_box.isPickable = false;
+            highlight_box.isVisible = false;
+
+            var highlight_material = new BABYLON.StandardMaterial("highlight_material", scene);
+            highlight_material.diffuseTexture = new BABYLON.Texture("images/box_outline.png");
+            highlight_material.hasAlpha = true;
+            highlight_material.alpha = 1.0;
+
+            highlight_box.material = highlight_material;
+            highlight_box.enableEdgesRendering();
+            highlight_box.edgesWidth = 2.0;
+            highlight_box.edgesColor = new BABYLON.Color4(0, 0, 0, 1);
+
+            let last_tooltip = Date.now();
+
+            scene.onPointerMove = function (evt, pickInfo) {
+                if ((Date.now() - last_tooltip) < 100) {
+                    return;
+                }
+                last_tooltip = Date.now();
+                let pickResult = scene.pick(evt.x, evt.y);
+                var p = null;
+                if (pickResult.pickedMesh && pickResult.pickedMesh.id === 'SPS') {
+                    // visible particle mesh selected
+                    if (picked_mesh) {
+                        update_box_visibility();
+                    }
+                    var faceId = pickResult.faceId;
+                    if (faceId == -1) { return; }
+                    var picked = SPS.pickedParticle(pickResult);
+                    var idx = picked.idx;
+                    p = SPS.particles[idx];
+                    p.isVisible = false;
+                    picked_mesh = p;
+
+                    // show highlite box and hide picked box
+                    highlight_box.isPickable = true;
+                    highlight_box.isVisible = true;
+                    picked_mesh.isVisible = false;
+                    highlight_box.color = p.color;
+                    // highlight_box.material.diffuseColor = null;  {r: 0.141, g: 0.431, b: 0}
+                    // highlight_box.material.emissiveColor = null;  {r: 0.141, g: 0.431, b: 0}
+                    // highlight_box.material.ambientColor = null;
+                    highlight_box.material.diffuseColor = p.color;
+                    highlight_box.scaling.x = picked_mesh.scale.x;
+                    highlight_box.scaling.y = picked_mesh.scale.y;
+                    highlight_box.scaling.z = picked_mesh.scale.z;
+
+                    highlight_box.position.x = p.position.x;
+                    highlight_box.position.y = p.position.y;
+                    highlight_box.position.z = p.position.z;
+
+                    tooltip_grid.isVisible = true;
+                    var f = d3.format(".2n");
+                    tooltip_val.text = f(p.orig_value);
+                    tooltip_x.text = "";
+                    tooltip_y.text = "";
+                    tooltip_z.text = "";
+
+                    tooltip_x.text = p.display_x.toString();
+                    tooltip_y.text = p.display_y.toString();
+                    tooltip_z.text = p.display_z.toString();
+                }
+                else if ((pickResult.pickedMesh && pickResult.pickedMesh.id != 'highlite_box')
+                    || pickResult.pickedMesh == null) {
+                    highlight_box.isPickable = false;
+                    highlight_box.isVisible = false;
+
+                    if (picked_mesh) {
+                        picked_mesh.isVisible = true;
+                    }
+
+                    tooltip_grid.isVisible = false;
+                    tooltip_x.text = "";
+                    tooltip_y.text = "";
+                    tooltip_z.text = "";
+                    update_box_visibility();
+                }
+            }
+
+            var tooltip_rect = new BABYLON.GUI.Rectangle();
+            tooltip_rect.width = "99%";
+            tooltip_rect.height = "65px";
+            // tooltip_rect.top = "100px";
+            tooltip_rect.left = "1%";
+            tooltip_rect.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            tooltip_rect.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+            tooltip_rect.cornerRadius = 10;
+            tooltip_rect.color = "White";
+            tooltip_rect.thickness = 1;
+            tooltip_rect.background = "transparent";
+            tooltip_rect.isVisible = true;
+            advancedTexture.addControl(tooltip_rect, 1, 1);
+
+            var tooltip_grid = new BABYLON.GUI.Grid();
+            tooltip_grid.background = "transparent";
+            tooltip_grid.width = "500px";
+            tooltip_grid.height = "60px";
+            tooltip_grid.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            tooltip_grid.addColumnDefinition(35, true);
+            tooltip_grid.addColumnDefinition(500, true);
+            tooltip_grid.addRowDefinition(15, true);
+            tooltip_grid.addRowDefinition(15, true);
+            tooltip_grid.addRowDefinition(15, true);
+            tooltip_grid.addRowDefinition(15, true);
+            tooltip_grid.isVisible = false;
+            tooltip_rect.addControl(tooltip_grid);
+
+            var tooltip_val_label = new BABYLON.GUI.TextBlock();
+            tooltip_val_label.text = "Value: ";
+            tooltip_val_label.color = "white";
+            tooltip_val_label.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            tooltip_val_label.fontSize = 10;
+            tooltip_grid.addControl(tooltip_val_label, 0, 0);
+
+            var tooltip_x_label = new BABYLON.GUI.TextBlock();
+            tooltip_x_label.text = "X: ";
+            tooltip_x_label.color = "white";
+            tooltip_x_label.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            tooltip_x_label.fontSize = 10;
+            tooltip_grid.addControl(tooltip_x_label, 1, 0);
+
+            var tooltip_y_label = new BABYLON.GUI.TextBlock();
+            tooltip_y_label.text = "Y: ";
+            tooltip_y_label.color = "white";
+            tooltip_y_label.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            tooltip_y_label.fontSize = 10;
+            tooltip_grid.addControl(tooltip_y_label, 2, 0);
+
+            var tooltip_z_label = new BABYLON.GUI.TextBlock();
+            tooltip_z_label.text = "Z: ";
+            tooltip_z_label.color = "white";
+            tooltip_z_label.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            tooltip_z_label.fontSize = 10;
+            tooltip_grid.addControl(tooltip_z_label, 3, 0);
+
+            var tooltip_val = new BABYLON.GUI.TextBlock();
+            tooltip_val.color = "white";
+            tooltip_val.fontSize = 10;
+            tooltip_val.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            tooltip_grid.addControl(tooltip_val, 0, 1);
+
+            var tooltip_x = new BABYLON.GUI.TextBlock();
+            tooltip_x.color = "white";
+            tooltip_x.fontSize = 10;
+            tooltip_x.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            tooltip_grid.addControl(tooltip_x, 1, 1);
+
+            var tooltip_y = new BABYLON.GUI.TextBlock();
+            tooltip_y.color = "white";
+            tooltip_y.fontSize = 10;
+            tooltip_y.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            tooltip_grid.addControl(tooltip_y, 2, 1);
+
+            var tooltip_z = new BABYLON.GUI.TextBlock();
+            tooltip_z.color = "white";
+            tooltip_z.fontSize = 10;
+            tooltip_z.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            tooltip_grid.addControl(tooltip_z, 3, 1);
+
+            return scene;
+        }
+
+
+        function process_data(data) {
+            data_array = data['data'];
+            x_categories = distinctValues(data_array, "airline_code");
+            y_categories = distinctValues(data_array, "shelf_mode");
+            z_categories = distinctValues(data_array, "brand_name");
+            min_density = getMin(data_array, "brand_availability_score");
+            max_density = getMax(data_array, "brand_availability_score");
+            xwidth = x_categories.length;
+            ywidth = y_categories.length;
+            zwidth = z_categories.length;
+            data_array = compute_display_value(data_array, "brand_availability_score", min_density, max_density);
+            data_array = add_category_index(data_array, "airline_code", "shelf_mode", "brand_name")
+            // console.log(x_categories);
+            // console.log(y_categories);
+            // console.log(z_categories);
+            // console.log(min_density);
+            // console.log(max_density);
+            // console.log(data_array);
+
+            const scene = createScene(); //Call the createScene function
+
+            // Register a render loop to repeatedly render the scene
+            engine.runRenderLoop(function () {
+                scene.render();
+            });
+        }
+
+        d3.json('data/brand_availability_score.json', process_data);
+
+        // Watch for browser/canvas resize events
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+    </script>
+
+</body>
+
+</html>

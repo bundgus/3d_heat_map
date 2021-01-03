@@ -1,0 +1,688 @@
+{
+    "data": [
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AA",
+            "brand_name": "BASIC ECONOMY",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AA",
+            "brand_name": "FIRST",
+            "brand_availability_score": -0.41
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AA",
+            "brand_name": "FIRST FLEXIBLE",
+            "brand_availability_score": -0.07
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP BUSINESS",
+            "brand_availability_score": -0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP BUSINESS FLEXIBLE",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP FIRST",
+            "brand_availability_score": -0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP FIRST FLEXIBLE",
+            "brand_availability_score": -0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AA",
+            "brand_name": "MAIN CABIN",
+            "brand_availability_score": 1.00
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AA",
+            "brand_name": "MAIN CABIN FLEXIBLE",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AA",
+            "brand_name": "PREMIUM ECONOMY",
+            "brand_availability_score": 0.14
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AA",
+            "brand_name": "PREMIUM ECONOMY FLEXIBLE",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AS",
+            "brand_name": "FIRST",
+            "brand_availability_score": -0.50
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AS",
+            "brand_name": "MAIN",
+            "brand_availability_score": 1.00
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AS",
+            "brand_name": "REFUNDABLE FIRST",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AS",
+            "brand_name": "REFUNDABLE MAIN",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "AS",
+            "brand_name": "SAVER",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "B6",
+            "brand_name": "BLUE",
+            "brand_availability_score": 1.00
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "B6",
+            "brand_name": "BLUE BASIC",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "B6",
+            "brand_name": "BLUE EXTRA",
+            "brand_availability_score": -0.53
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "B6",
+            "brand_name": "BLUE EXTRA REF",
+            "brand_availability_score": -0.26
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "B6",
+            "brand_name": "BLUE REF",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "B6",
+            "brand_name": "MINT",
+            "brand_availability_score": -0.26
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "B6",
+            "brand_name": "MINT REF",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "DL",
+            "brand_name": "BASIC ECONOMY",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "DL",
+            "brand_name": "DELTA COMFORT PLUS",
+            "brand_availability_score": -0.51
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "DL",
+            "brand_name": "DELTA ONE",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "DL",
+            "brand_name": "FIRST CLASS",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "DL",
+            "brand_name": "MAIN CABIN",
+            "brand_availability_score": 1.00
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "HA",
+            "brand_name": "FIRST CLASS CABIN",
+            "brand_availability_score": 0.53
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "HA",
+            "brand_name": "MAIN CABIN",
+            "brand_availability_score": 1.00
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "HA",
+            "brand_name": "MAIN CABIN BASIC",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "UA",
+            "brand_name": "BASIC ECONOMY",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "UA",
+            "brand_name": "ECONOMY",
+            "brand_availability_score": 1.00
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "UA",
+            "brand_name": "ECONOMY FLEXIBLE",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "UA",
+            "brand_name": "ECONOMY PLUS",
+            "brand_availability_score": -0.09
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "UA",
+            "brand_name": "FIRST OR BUSINESS",
+            "brand_availability_score": 0.51
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "UA",
+            "brand_name": "PREMIUM ECONOMY",
+            "brand_availability_score": 0.11
+        },
+        {
+            "shelf_mode": "ISELL_NAS",
+            "airline_code": "UA",
+            "brand_name": "PREMIUM ECONOMY FLEXIBLE",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AA",
+            "brand_name": "BASIC ECONOMY",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AA",
+            "brand_name": "FIRST",
+            "brand_availability_score": 0.52
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AA",
+            "brand_name": "FIRST FLEXIBLE",
+            "brand_availability_score": -0.15
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP BUSINESS",
+            "brand_availability_score": 0.07
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP BUSINESS FLEXIBLE",
+            "brand_availability_score": -0.27
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP FIRST",
+            "brand_availability_score": 0.05
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP FIRST FLEXIBLE",
+            "brand_availability_score": -0.27
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AA",
+            "brand_name": "MAIN CABIN",
+            "brand_availability_score": 0.90
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AA",
+            "brand_name": "MAIN CABIN FLEXIBLE",
+            "brand_availability_score": -0.20
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AA",
+            "brand_name": "PREMIUM ECONOMY",
+            "brand_availability_score": 0.40
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AA",
+            "brand_name": "PREMIUM ECONOMY FLEXIBLE",
+            "brand_availability_score": 0.14
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AS",
+            "brand_name": "FIRST",
+            "brand_availability_score": 0.53
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AS",
+            "brand_name": "MAIN",
+            "brand_availability_score": 1.00
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AS",
+            "brand_name": "REFUNDABLE FIRST",
+            "brand_availability_score": -0.06
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AS",
+            "brand_name": "REFUNDABLE MAIN",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "AS",
+            "brand_name": "SAVER",
+            "brand_availability_score": 0.82
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "B6",
+            "brand_name": "BLUE",
+            "brand_availability_score": -0.43
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "B6",
+            "brand_name": "BLUE BASIC",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "B6",
+            "brand_name": "BLUE EXTRA",
+            "brand_availability_score": 0.53
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "B6",
+            "brand_name": "BLUE EXTRA REF",
+            "brand_availability_score": -0.26
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "B6",
+            "brand_name": "BLUE REF",
+            "brand_availability_score": -0.26
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "B6",
+            "brand_name": "MINT",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "B6",
+            "brand_name": "MINT REF",
+            "brand_availability_score": -0.26
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "DL",
+            "brand_name": "BASIC ECONOMY",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "DL",
+            "brand_name": "DELTA COMFORT PLUS",
+            "brand_availability_score": 0.53
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "DL",
+            "brand_name": "DELTA ONE",
+            "brand_availability_score": 0.29
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "DL",
+            "brand_name": "FIRST CLASS",
+            "brand_availability_score": 0.28
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "DL",
+            "brand_name": "MAIN CABIN",
+            "brand_availability_score": -0.45
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "HA",
+            "brand_name": "FIRST CLASS CABIN",
+            "brand_availability_score": -0.53
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "HA",
+            "brand_name": "MAIN CABIN",
+            "brand_availability_score": -1.00
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "HA",
+            "brand_name": "MAIN CABIN BASIC",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "UA",
+            "brand_name": "BASIC ECONOMY",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "UA",
+            "brand_name": "ECONOMY",
+            "brand_availability_score": 0.30
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "UA",
+            "brand_name": "ECONOMY FLEXIBLE",
+            "brand_availability_score": -0.27
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "UA",
+            "brand_name": "ECONOMY PLUS",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "UA",
+            "brand_name": "FIRST OR BUSINESS",
+            "brand_availability_score": 0.51
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "UA",
+            "brand_name": "PREMIUM ECONOMY",
+            "brand_availability_score": 0.29
+        },
+        {
+            "shelf_mode": "PROXY_ATPCO",
+            "airline_code": "UA",
+            "brand_name": "PREMIUM ECONOMY FLEXIBLE",
+            "brand_availability_score": 0.11
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AA",
+            "brand_name": "BASIC ECONOMY",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AA",
+            "brand_name": "FIRST",
+            "brand_availability_score": 0.53
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AA",
+            "brand_name": "FIRST FLEXIBLE",
+            "brand_availability_score": -0.07
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP BUSINESS",
+            "brand_availability_score": 0.07
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP BUSINESS FLEXIBLE",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP FIRST",
+            "brand_availability_score": 0.05
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AA",
+            "brand_name": "FLAGSHIP FIRST FLEXIBLE",
+            "brand_availability_score": -0.27
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AA",
+            "brand_name": "MAIN CABIN",
+            "brand_availability_score": 0.99
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AA",
+            "brand_name": "MAIN CABIN FLEXIBLE",
+            "brand_availability_score": -0.16
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AA",
+            "brand_name": "PREMIUM ECONOMY",
+            "brand_availability_score": 0.14
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AA",
+            "brand_name": "PREMIUM ECONOMY FLEXIBLE",
+            "brand_availability_score": 0.14
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AS",
+            "brand_name": "FIRST",
+            "brand_availability_score": -0.50
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AS",
+            "brand_name": "MAIN",
+            "brand_availability_score": 1.00
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AS",
+            "brand_name": "REFUNDABLE FIRST",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AS",
+            "brand_name": "REFUNDABLE MAIN",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "AS",
+            "brand_name": "SAVER",
+            "brand_availability_score": 0.82
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "B6",
+            "brand_name": "BLUE",
+            "brand_availability_score": -0.43
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "B6",
+            "brand_name": "BLUE BASIC",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "B6",
+            "brand_name": "BLUE EXTRA",
+            "brand_availability_score": 0.49
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "B6",
+            "brand_name": "BLUE EXTRA REF",
+            "brand_availability_score": -0.26
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "B6",
+            "brand_name": "BLUE REF",
+            "brand_availability_score": 0.04
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "B6",
+            "brand_name": "MINT",
+            "brand_availability_score": 0.21
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "B6",
+            "brand_name": "MINT REF",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "DL",
+            "brand_name": "BASIC ECONOMY",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "DL",
+            "brand_name": "DELTA COMFORT PLUS",
+            "brand_availability_score": -0.51
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "DL",
+            "brand_name": "DELTA ONE",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "DL",
+            "brand_name": "FIRST CLASS",
+            "brand_availability_score": 0.27
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "DL",
+            "brand_name": "MAIN CABIN",
+            "brand_availability_score": 1.00
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "HA",
+            "brand_name": "FIRST CLASS CABIN",
+            "brand_availability_score": -0.53
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "HA",
+            "brand_name": "MAIN CABIN",
+            "brand_availability_score": -1.00
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "HA",
+            "brand_name": "MAIN CABIN BASIC",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "UA",
+            "brand_name": "BASIC ECONOMY",
+            "brand_availability_score": 0.78
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "UA",
+            "brand_name": "ECONOMY",
+            "brand_availability_score": 1.00
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "UA",
+            "brand_name": "ECONOMY FLEXIBLE",
+            "brand_availability_score": -0.21
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "UA",
+            "brand_name": "ECONOMY PLUS",
+            "brand_availability_score": -0.09
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "UA",
+            "brand_name": "FIRST OR BUSINESS",
+            "brand_availability_score": 0.51
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "UA",
+            "brand_name": "PREMIUM ECONOMY",
+            "brand_availability_score": 0.29
+        },
+        {
+            "shelf_mode": "PROXY_LOCALLY_STATIC",
+            "airline_code": "UA",
+            "brand_name": "PREMIUM ECONOMY FLEXIBLE",
+            "brand_availability_score": 0.27
+        }
+    ]
+}
